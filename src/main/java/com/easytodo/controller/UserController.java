@@ -79,4 +79,20 @@ public class UserController {
         userService.updateById(user);
         return Result.succ(0,"密码修改成功成功",null);
     }
+
+    @PutMapping("/updateAuthority")
+    public Result updateAuthority(@Validated UpdatePasswordDto updatePasswordDto,Integer roleId){
+
+        User user = userService.getOne(new QueryWrapper<User>().eq("username",updatePasswordDto.getUsername()));
+        if(user == null){
+            return Result.fail(1,"用户不存在",null);
+        }
+        if(!user.getPassword().equals(MD5Util.MD5EncodeUtf8(updatePasswordDto.getOldPassword()))){
+            return Result.fail(1,"密码不正确",null);
+        }
+
+        user.setRoleid(roleId);
+        userService.updateById(user);
+        return Result.succ(0,"修改权限成功成功",null);
+    }
 }
