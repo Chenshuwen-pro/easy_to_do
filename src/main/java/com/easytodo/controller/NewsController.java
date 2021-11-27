@@ -5,8 +5,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.easytodo.common.lang.Result;
+import com.easytodo.entity.Activity;
 import com.easytodo.entity.News;
+import com.easytodo.entity.User;
 import com.easytodo.service.NewsService;
+import com.easytodo.util.MD5Util;
 import org.springframework.util.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -46,6 +49,38 @@ public class NewsController {
         Assert.notNull(news, "This news have been deleted.");
 
         return Result.succ(news);
+    }
+
+
+    @PostMapping("/edit")
+    public Result edit(@RequestBody News news) {
+
+        News temp = newsService.getById(news.getId());
+
+        if(temp != null){
+            temp.setTitle(news.getTitle());
+            temp.setContent(news.getContent());
+            temp.setAuthor(news.getAuthor());
+            temp.setPublishTime(news.getPublishTime());
+            newsService.updateById(temp);
+        }
+        else{
+            news.setId(newsService.count()+1);
+            newsService.saveOrUpdate(news);
+
+        }
+        return Result.succ(null);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public Result delete(@PathVariable(name = "id") Integer id){
+        boolean res = newsService.removeById(id);
+        if(res){
+            return Result.succ(0,"删除成功",null);
+        }
+        else{
+            return Result.fail(1,"删除失败",null);
+        }
     }
 
 }
