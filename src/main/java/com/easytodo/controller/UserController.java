@@ -54,11 +54,12 @@ public class UserController {
         User user = userService.getOne(new QueryWrapper<User>().eq("username",registerUser.getUsername()));
 
         if(user != null){
-            return Result.fail("用户名已存在");
+            return Result.fail(1,"用户名已存在",null);
         }
         else{
             registerUser.setId(userService.count()+1);
             registerUser.setPassword(MD5Util.MD5EncodeUtf8(registerUser.getPassword()));
+            registerUser.setRoleid(1);
             userService.save(registerUser);
             return Result.succ(0,"注册成功",null);
         }
@@ -77,22 +78,19 @@ public class UserController {
 
         user.setPassword(MD5Util.MD5EncodeUtf8(updatePasswordDto.getNewPassword()));
         userService.updateById(user);
-        return Result.succ(0,"密码修改成功成功",null);
+        return Result.succ(0,"密码修改成功",null);
     }
 
     @PutMapping("/updateAuthority")
-    public Result updateAuthority(@Validated UpdatePasswordDto updatePasswordDto,Integer roleId){
+    public Result updateAuthority(String username,Integer roleId){
 
-        User user = userService.getOne(new QueryWrapper<User>().eq("username",updatePasswordDto.getUsername()));
+        User user = userService.getOne(new QueryWrapper<User>().eq("username",username));
         if(user == null){
             return Result.fail(1,"用户不存在",null);
-        }
-        if(!user.getPassword().equals(MD5Util.MD5EncodeUtf8(updatePasswordDto.getOldPassword()))){
-            return Result.fail(1,"密码不正确",null);
         }
 
         user.setRoleid(roleId);
         userService.updateById(user);
-        return Result.succ(0,"修改权限成功成功",null);
+        return Result.succ(0,"修改权限成功",null);
     }
 }

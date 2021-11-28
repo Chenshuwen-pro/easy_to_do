@@ -7,10 +7,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.easytodo.common.lang.Result;
 import com.easytodo.entity.Activity;
 import com.easytodo.entity.Course;
+import com.easytodo.entity.Homework;
 import com.easytodo.service.ActivityService;
 import com.easytodo.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * <p>
@@ -39,8 +42,8 @@ public class ActivityController {
         }
     }
 
-    @DeleteMapping("/delete/{id}")
-    public Result delete(@PathVariable(name = "id") Integer id){
+    @DeleteMapping("/delete")
+    public Result delete(Integer id){
         boolean res = activityService.removeById(id);
         if(res){
             return Result.succ(0,"删除活动日程成功",null);
@@ -73,13 +76,9 @@ public class ActivityController {
     }
 
     @GetMapping("/list")
-    public Result list(@RequestParam(defaultValue = "1") Integer currentPage) {
-
-        Page page = new Page(currentPage, 5);
-        IPage pageData = activityService.page(page,
-                new QueryWrapper<Activity>().orderByDesc(
-                        "date"));
-        return Result.succ(pageData);
+    public Result list(Integer userId) {
+        List<Activity> list = activityService.list(new QueryWrapper<Activity>().eq("student_id", userId));
+        return Result.succ(0,"活动列表展示成功",list);
     }
 
 }

@@ -12,6 +12,8 @@ import com.easytodo.service.HomeworkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * <p>
  *  前端控制器
@@ -39,8 +41,8 @@ public class HomeworkController {
         }
     }
 
-    @DeleteMapping("/delete/{id}")
-    public Result delete(@PathVariable(name = "id") Integer id){
+    @DeleteMapping("/delete")
+    public Result delete(Integer id){
         boolean res = homeworkService.removeById(id);
         if(res){
             return Result.succ(0,"删除家庭作业成功",null);
@@ -73,12 +75,8 @@ public class HomeworkController {
     }
 
     @GetMapping("/list")
-    public Result list(@RequestParam(defaultValue = "1") Integer currentPage) {
-
-        Page page = new Page(currentPage, 5);
-        IPage pageData = homeworkService.page(page,
-                new QueryWrapper<Homework>().orderByDesc(
-                        "date"));
-        return Result.succ(pageData);
+    public Result list(Integer userId) {
+        List<Homework> list = homeworkService.list(new QueryWrapper<Homework>().eq("student_id", userId));
+        return Result.succ(0,"家庭作业列表展示成功",list);
     }
 }

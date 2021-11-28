@@ -15,6 +15,9 @@ import com.easytodo.util.MD5Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.*;
+import java.util.List;
+
 /**
  * <p>
  *  前端控制器
@@ -43,8 +46,8 @@ public class CourseController {
         }
     }
 
-    @DeleteMapping("/delete/{id}")
-    public Result delete(@PathVariable(name = "id") Integer id){
+    @DeleteMapping("/delete")
+    public Result delete(Integer id){
         boolean res = courseService.removeById(id);
         if(res){
             return Result.succ(0,"删除上课日程成功",null);
@@ -77,12 +80,8 @@ public class CourseController {
     }
 
     @GetMapping("/list")
-    public Result list(@RequestParam(defaultValue = "1") Integer currentPage) {
-
-        Page page = new Page(currentPage, 5);
-        IPage pageData = courseService.page(page,
-                new QueryWrapper<Course>().orderByDesc(
-                        "date"));
-        return Result.succ(pageData);
+    public Result list(Integer userId) {
+        List<Course> list = courseService.list(new QueryWrapper<Course>().eq("student_id", userId));
+        return Result.succ(0,"课程列表展示成功",list);
     }
 }
