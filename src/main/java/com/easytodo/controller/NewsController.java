@@ -35,10 +35,10 @@ public class NewsController {
     @GetMapping("/list")
     public Result list(@RequestParam(defaultValue = "1") Integer currentPage) {
 
-        Page page = new Page(currentPage, 5);
+        Page page = new Page(currentPage, 1000);
         IPage pageData = newsService.page(page,
                 new QueryWrapper<News>().orderByDesc(
-                "publish_time"));
+                "publish_time").isNotNull("title"));
 
         return Result.succ(pageData);
     }
@@ -53,7 +53,7 @@ public class NewsController {
 
 
     @PostMapping("/edit")
-    public Result edit(@RequestBody News news) {
+    public Result edit(News news) {
 
         News temp = newsService.getById(news.getId());
 
@@ -66,7 +66,7 @@ public class NewsController {
         }
         else{
             news.setId(newsService.count()+1);
-            newsService.saveOrUpdate(news);
+            newsService.save(news);
 
         }
         return Result.succ(null);

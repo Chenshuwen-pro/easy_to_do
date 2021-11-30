@@ -30,7 +30,7 @@ public class CommentController {
     public Result list(@RequestParam(defaultValue = "1") Integer currentPage,
                        @PathVariable(name = "nid")Integer nid) {
 
-        Page page = new Page(currentPage, 5);
+        Page page = new Page(currentPage, 1000);
         IPage pageData = commentService.page(page,
                 new QueryWrapper<Comment>().eq("nid",nid).orderByDesc(
                         "createTime"));
@@ -48,7 +48,7 @@ public class CommentController {
 
 
     @PostMapping("/edit")
-    public Result edit(@RequestBody Comment comment) {
+    public Result edit(Comment comment) {
 
         Comment temp = commentService.getById(comment.getId());
 
@@ -61,7 +61,7 @@ public class CommentController {
         }
         else{
             comment.setId(commentService.count()+1);
-            commentService.saveOrUpdate(comment);
+            commentService.save(comment);
 
         }
         return Result.succ(null);
